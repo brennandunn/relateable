@@ -8,5 +8,13 @@ require 'relateable'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
+
+  config.before(:each) do
+    User.delete_all
+    Relateable::ModelRelation.delete_all
+  end
+
+  config.after(:each) do
+  end
   
 end
