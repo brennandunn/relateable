@@ -12,11 +12,6 @@ describe "Using Relateable in a model" do
     @user.respond_to?(:related).should be_true
   end
   
-  it "returns an ActiveRecord::Relation" do
-    @user.save
-    @user.related.should be_an_instance_of ActiveRecord::Relation
-  end
-  
   context "when creating a new record" do
     
     it "creates ModelRelation records for the record against every other record of it's class" do
@@ -24,7 +19,7 @@ describe "Using Relateable in a model" do
       
       lambda {
         @user.save
-      }.should change(Relateable::ModelRelation, :count).by(1)
+      }.should change(Relateable::ModelRelation, :count).by(2)
     end
     
     it "stores the score of the relationship in the ModelRelation record" do
@@ -41,6 +36,20 @@ describe "Using Relateable in a model" do
     
   end
   
+  context "when updating a record" do
+    
+    it "for now, destroys existing model relation records and recreates them" do
+      @user.age = 21
+      @user.save
+      
+      @user.age = 30
+      @user.should_receive(:destroy_model_relations)
+      @user.should_receive(:create_model_relations)
+      @user.save
+    end
+    
+  end
+  
   context "when destroying a record" do
     
     it "removes relevant ModelRelation records" do
@@ -49,7 +58,7 @@ describe "Using Relateable in a model" do
       
       lambda {
         user.destroy
-      }.should change(Relateable::ModelRelation, :count).by(-1)
+      }.should change(Relateable::ModelRelation, :count).by(-2)
     end
     
   end
@@ -57,7 +66,19 @@ describe "Using Relateable in a model" do
   context "finding related records" do
     
     before do
+      User.relateable do
+        factor :age do |a, b|
+          difference = (a.age - b.age).abs
+          if difference >= 20
+            0.0
+          else
+            (20.0 - difference.to_f) / 20.0
+          end
+        end
+      end
+      
       @user.age = 21
+      @user.save
       @a_few_years_younger = User.create :age => 14
       @close_in_age = User.create :age => 20
       @similar_in_age = User.create :age => 18

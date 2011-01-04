@@ -8,6 +8,7 @@ module Relateable
     def relateable(&block)
       send :include, InstanceMethods
       @@relateable_context = Context.new(self, &block)
+      has_many :model_relations, :class_name => 'Relateable::ModelRelation', :as => :model
       after_create  :create_model_relations
       after_update  :update_model_relations
       after_destroy :destroy_model_relations
@@ -15,10 +16,8 @@ module Relateable
     
     module InstanceMethods
       
-      def related
-        self.class.where(
-          :id => ModelRelation.where("(model_id = :id OR associated_id = :id) AND model_type = :class_name", { :id => id, :class_name => self.class.name }).map(&:id)
-        )
+      def related(number=10)
+        model_relations.order('score desc').limit(number).map(&:associated)
       end
       
       private
@@ -27,6 +26,11 @@ module Relateable
         (self.class.all - [self]).each do |associated|
           relation = ModelRelation.create :model => self, :associated_id => associated.id, :score => self.class.relateable_context.match(self, associated)
         end
+      end
+      
+      def  update_model_relations
+        destroy_model_relations
+        create_model_relations
       end
       
       def destroy_model_relations

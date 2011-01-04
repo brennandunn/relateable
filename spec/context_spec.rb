@@ -30,7 +30,6 @@ describe "Creating a context for a class, which determines how to generate a com
     it "returns a score comparing two records" do
       @context.factor :distance_in_age_on_20_year_scale do |user_a, user_b|
         difference = (user_a.age - user_b.age).abs
-        return 0 if difference >= 20
         (20.0 - difference.to_f) / 20.0
       end
       factor = @context.factors.first
