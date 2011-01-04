@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
     "lib/relateable/context.rb",
     "lib/relateable/model.rb",
     "lib/relateable/model_relation.rb",
+    "relateable.gemspec",
     "spec/context_spec.rb",
     "spec/implementation_spec.rb",
     "spec/spec_helper.rb",
