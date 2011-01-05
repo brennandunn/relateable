@@ -89,6 +89,9 @@ describe "Using Relateable in a model" do
       @user.related.should == [@close_in_age, @similar_in_age, @a_few_years_younger, @way_too_old]
     end
     
+    it "can find the related score for another record" do
+      @user.related_score_for(@similar_in_age).should == 0.85
+    end
     
   end
 

@@ -20,6 +20,12 @@ module Relateable
         model_relations.order('score desc').limit(number).map(&:associated)
       end
       
+      def related_score_for(record)
+        if relation = model_relations.where(:associated_id => record.id).first
+          relation.score
+        end
+      end
+      
       private
       
       def create_model_relations
