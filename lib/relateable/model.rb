@@ -24,7 +24,7 @@ module Relateable
       
       def create_model_relations
         (self.class.all - [self]).each do |associated|
-          relation = ModelRelation.create :model => self, :associated_id => associated.id, :score => self.class.relateable_context.match(self, associated)
+          relation = ModelRelation.create :model_id => self.id, :model_type => self.class.name, :associated_id => associated.id, :score => self.class.relateable_context.match(self, associated)
         end
       end
       
