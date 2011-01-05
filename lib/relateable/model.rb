@@ -17,7 +17,7 @@ module Relateable
     module InstanceMethods
       
       def related(number=10)
-        model_relations.order('score desc').limit(number).map(&:associated)
+        model_relations.order('score desc').limit(number).map(&:associated).uniq
       end
       
       def related_score_for(record)
